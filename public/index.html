@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование номеров - Гостиница "Райский Отдых"</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-light">
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-hotel fa-2x me-2"></i>
+                <div>
+                    <h4 class="mb-0" id="hotel-name"></h4>
+                    <small class="opacity-75" id="hotel-tagline">Комфорт и уют для каждого гостя</small>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#rooms"><i class="fas fa-bed me-1"></i>Номера</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#amenities"><i class="fas fa-star me-1"></i>Услуги</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact"><i class="fas fa-phone me-1"></i>Контакты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light btn-sm ms-2" href="/admin">
+                            <i class="fas fa-user-shield me-1"></i>Для администраторов
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-80">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold text-white mb-4">Найдите свой идеальный отдых</h1>
+                    <p class="lead text-white mb-4">Роскошные номера, безупречный сервис и незабываемые впечатления ждут вас в нашей гостинице</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="badge bg-success fs-6 p-2"><i class="fas fa-wifi me-1"></i>Бесплатный Wi-Fi</span>
+                        <span class="badge bg-info fs-6 p-2"><i class="fas fa-swimming-pool me-1"></i>Бассейн</span>
+                        <span class="badge bg-warning fs-6 p-2"><i class="fas fa-utensils me-1"></i>Столовая</span>
+                        <span class="badge bg-danger fs-6 p-2"><i class="fas fa-spa me-1"></i>СПА</span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card search-card glass-effect">
+                        <div class="card-body p-4">
+                            <h3 class="card-title text-center mb-4">
+                                <i class="fas fa-search me-2"></i>Найти номер
+                            </h3>
+                            <form hx-get="/api/rooms/available" hx-target="#rooms-list" hx-trigger="submit" 
+                                  hx-indicator="#search-spinner">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-calendar-plus me-1"></i>Дата заезда</label>
+                                            <input type="date" name="checkin" class="form-control form-control-lg" required 
+                                                   min="{{ today }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-calendar-minus me-1"></i>Дата выезда</label>
+                                            <input type="date" name="checkout" class="form-control form-control-lg" required 
+                                                   min="{{ tomorrow }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-search me-1"></i>
+                                    <span>Найти доступные номера</span>
+                                    <div id="search-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция номеров -->
+    <section id="rooms" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Наши номера</h2>
+                <p class="lead text-muted">Выберите идеальный номер для вашего пребывания</p>
+            </div>
+            
+            <div id="rooms-list">
+                <div class="text-center py-5">
+                    <i class="fas fa-hotel fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Выберите даты заезда и выезда для поиска доступных номеров</h4>
+                    <p class="text-muted">Мы покажем все свободные номера на выбранные даты</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция услуг -->
+    <section id="amenities" class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Наши услуги</h2>
+                <p class="lead text-muted">Все для вашего комфортного пребывания</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <div class="amenity-icon">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <h5>Круглосуточная ресепшн</h5>
+                        <p class="text-muted">Всегда готовы помочь</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <div class="amenity-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h5>Бесплатный Wi-Fi</h5>
+                        <p class="text-muted">Высокоскоростной интернет</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <div class="amenity-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h5>Столовая</h5>
+                        <p class="text-muted">Домашняя кухня с местным колоритом каждый день</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <div class="amenity-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h5>СПА-центр</h5>
+                        <p class="text-muted">Релакс и восстановление</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact" class="py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3>Готовы к незабываемому отдыху?</h3>
+                    <p class="mb-0">Забронируйте номер прямо сейчас и получите специальные условия</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light btn-lg" onclick="scrollToSearch()">
+                        <i class="fas fa-calendar-check me-1"></i>Забронировать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-hotel me-2"></i><span id="footer-hotel-name"></span></h5>
+                    <p class="mb-1" id="footer-address"></p>
+                    <p class="mb-0" id="footer-phone"></p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Быстрые ссылки</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#rooms" class="text-light text-decoration-none">Номера</a></li>
+                        <li><a href="#amenities" class="text-light text-decoration-none">Услуги</a></li>
+                        <li><a href="#contact" class="text-light text-decoration-none">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Свяжитесь с нами</h5>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-light"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-telegram fa-2x"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-whatsapp fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Гостиница "Райский Отдых". Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно бронирования -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-plus me-2"></i>Заявка на бронирование
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm" hx-post="/api/booking-request" hx-target="#booking-result">
+                        <div id="room-info" class="mb-4 p-3 bg-light rounded"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Фамилия *</label>
+                                    <input type="text" name="surname" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Имя *</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Отчество</label>
+                                    <input type="text" name="patronymic" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Телефон *</label>
+                                    <input type="tel" name="phone" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="booking-result"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Отмена
+                    </button>
+                    <button type="submit" form="bookingForm" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i>Отправить заявку
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем информацию о гостинице
+            fetch('/api/hotel-info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('hotel-name').textContent = data.name;
+                    document.getElementById('footer-hotel-name').textContent = data.name;
+                    document.getElementById('footer-address').textContent = data.address;
+                    document.getElementById('footer-phone').textContent = data.phone;
+                    document.title = `Бронирование номеров - ${data.name}`;
+                });
+
+            // Устанавливаем минимальные даты
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            
+            document.querySelector('input[name="checkin"]').min = today;
+            document.querySelector('input[name="checkout"]').min = tomorrowStr;
+            
+            // Устанавливаем значения по умолчанию
+            document.querySelector('input[name="checkin"]').value = today;
+            document.querySelector('input[name="checkout"]').value = tomorrowStr;
+        });
+
+        function showBookingModal(roomId, roomInfo, roomImage) {
+            const checkin = document.querySelector('input[name="checkin"]').value;
+            const checkout = document.querySelector('input[name="checkout"]').value;
+            
+            document.getElementById('room-info').innerHTML = `
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <img src="${roomImage}" class="img-fluid rounded" alt="Номер" 
+                             onerror="this.src='/images/room-placeholder.jpg'">
+                    </div>
+                    <div class="col-md-9">
+                        <h5 class="mb-2">${roomInfo}</h5>
+                        <p class="mb-1"><strong>Даты:</strong> ${checkin} - ${checkout}</p>
+                        <p class="mb-0 text-muted">После отправки заявки наш менеджер свяжется с вами для подтверждения бронирования</p>
+                    </div>
+                </div>
+                <input type="hidden" name="room_id" value="${roomId}">
+                <input type="hidden" name="checkin" value="${checkin}">
+                <input type="hidden" name="checkout" value="${checkout}">
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        }
+
+        function scrollToSearch() {
+            document.querySelector('.hero-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // Обработка успешной отправки заявки
+        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+            if (evt.detail.target.id === 'booking-result') {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    document.getElementById('bookingForm').reset();
+                    bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                    
+                    // Показываем уведомление об успехе
+                    showNotification('success', 'Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
+                }
+            }
+        });
+
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Добавляем обработку ошибок изображений
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('error', function(e) {
+                if (e.target.tagName === 'IMG' && e.target.getAttribute('src') !== '/images/room-placeholder.jpg') {
+                    e.target.src = '/images/room-placeholder.jpg';
+                }
+            }, true);
+        });
+    </script>
+</body>
+</html>

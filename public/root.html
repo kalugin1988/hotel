@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление системой - Панель администратора</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-cogs me-2"></i>Панель управления гостиницей
+            </span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="fas fa-tachometer-alt me-1"></i>Админ-панель
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>Главная
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" hx-post="/api/logout" hx-target="body">
+                            <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Боковая панель -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column" id="rootTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active text-start" id="stats-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#stats" type="button" role="tab">
+                                <i class="fas fa-chart-bar me-2"></i>Статистика
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-start" id="users-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#users" type="button" role="tab">
+                                <i class="fas fa-users me-2"></i>Пользователи
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-start" id="rooms-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#rooms" type="button" role="tab">
+                                <i class="fas fa-bed me-2"></i>Номера
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-start" id="system-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#system" type="button" role="tab">
+                                <i class="fas fa-database me-2"></i>Система
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6>Быстрые действия</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="loadStatistics()">
+                                <i class="fas fa-sync-alt me-1"></i>Обновить статистику
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="loadUsers()">
+                                <i class="fas fa-users me-1"></i>Обновить пользователей
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="loadRooms()">
+                                <i class="fas fa-bed me-1"></i>Обновить номера
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Основной контент -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="tab-content" id="rootTabContent">
+                    <!-- Вкладка Статистика -->
+                    <div class="tab-pane fade show active" id="stats" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-chart-bar me-2"></i>Статистика гостиницы</h2>
+                            <div class="d-flex">
+                                <input type="date" id="stats-date" class="form-control me-2" 
+                                       value="{{ today }}">
+                                <button class="btn btn-primary" onclick="loadStatistics()">
+                                    <i class="fas fa-sync-alt me-1"></i>Обновить
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="statistics-content">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                                <p class="mt-2">Загрузка статистики...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка Пользователи -->
+                    <div class="tab-pane fade" id="users" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-users me-2"></i>Управление пользователями</h2>
+                            <button class="btn btn-success" onclick="showUserModal()">
+                                <i class="fas fa-plus me-1"></i>Добавить пользователя
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="users-content">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                        <p class="mt-2">Загрузка пользователей...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка Номера -->
+                    <div class="tab-pane fade" id="rooms" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-bed me-2"></i>Управление номерами</h2>
+                            <button class="btn btn-success" onclick="showRoomModal()">
+                                <i class="fas fa-plus me-1"></i>Добавить номер
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="rooms-content">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                        <p class="mt-2">Загрузка номеров...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Вкладка Система -->
+                    <div class="tab-pane fade" id="system" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-database me-2"></i>Управление системой</h2>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Опасные действия
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">Инициализация базы данных</h6>
+                                        <p class="card-text text-muted">
+                                            Полное пересоздание базы данных с тестовыми данными. 
+                                            <strong class="text-danger">Внимание: все существующие данные будут удалены!</strong>
+                                        </p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-warning" onclick="initDatabase()">
+                                                <i class="fas fa-database me-1"></i> Инициализировать БД
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Информация о системе
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">Системная информация</h6>
+                                        <p class="card-text text-muted">
+                                            Просмотр системной информации и состояния приложения
+                                        </p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-info" onclick="showSystemInfo()">
+                                                <i class="fas fa-info-circle me-1"></i> Показать информацию
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="system-result" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно пользователя -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">
+                        <i class="fas fa-user-plus me-2"></i>Добавить пользователя
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Фамилия *</label>
+                                    <input type="text" id="userSurname" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Имя *</label>
+                                    <input type="text" id="userName" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Отчество</label>
+                                    <input type="text" id="userPatronymic" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Логин *</label>
+                                    <input type="text" id="userLogin" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Должность *</label>
+                                    <select id="userPosition" class="form-select" required>
+                                        <option value="">Выберите должность</option>
+                                        <option value="Администратор">Администратор</option>
+                                        <option value="Менеджер">Менеджер</option>
+                                        <option value="Ресепшен">Ресепшен</option>
+                                        <option value="Уборщик">Уборщик</option>
+                                        <option value="Технический персонал">Технический персонал</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" id="passwordLabel">Пароль *</label>
+                                    <input type="password" id="userPassword" class="form-control" required>
+                                    <div class="form-text" id="passwordHelp" style="display: none;">
+                                        Оставьте пустым, чтобы не менять пароль
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Подтверждение пароля *</label>
+                                    <input type="password" id="userPasswordConfirm" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="userFormResult"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Отмена
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">
+                        <i class="fas fa-save me-1"></i>Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно номера -->
+    <div class="modal fade" id="roomModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roomModalTitle">
+                        <i class="fas fa-bed me-2"></i>Добавить номер
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="roomForm">
+                        <input type="hidden" id="roomId">
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Корпус *</label>
+                                    <input type="text" id="roomBuilding" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Номер комнаты *</label>
+                                    <input type="text" id="roomNumber" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Статус *</label>
+                                    <select id="roomStatus" class="form-select" required>
+                                        <option value="economy">Эконом</option>
+                                        <option value="standard">Стандарт</option>
+                                        <option value="vip">VIP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Цена за сутки *</label>
+                                    <div class="input-group">
+                                        <input type="number" id="roomPrice" class="form-control" min="0" step="0.01" required>
+                                        <span class="input-group-text">₽</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">Двуспальные кровати</label>
+                                    <input type="number" id="roomDoubleBeds" class="form-control" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">Односпальные кровати</label>
+                                    <input type="number" id="roomSingleBeds" class="form-control" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">Количество комнат</label>
+                                    <input type="number" id="roomRoomsCount" class="form-control" min="1" value="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Ссылка на изображение</label>
+                                    <input type="url" id="roomImageUrl" class="form-control" placeholder="https://example.com/image.jpg">
+                                    <div class="form-text">Укажите URL изображения или оставьте пустым для использования заглушки</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Описание номера</label>
+                                    <textarea id="roomDescription" class="form-control" rows="4" maxlength="2500" placeholder="Опишите особенности номера..."></textarea>
+                                    <div class="form-text">
+                                        <span id="charCount">0</span>/2500 символов
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="card-title mb-0">Удобства номера</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="roomKettle">
+                                                    <label class="form-check-label" for="roomKettle">
+                                                        <i class="fas fa-mug-hot me-1"></i>Чайник
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="roomTv">
+                                                    <label class="form-check-label" for="roomTv">
+                                                        <i class="fas fa-tv me-1"></i>Телевизор
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="roomBalcony">
+                                                    <label class="form-check-label" for="roomBalcony">
+                                                        <i class="fas fa-home me-1"></i>Балкон
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="roomAirConditioning">
+                                                    <label class="form-check-label" for="roomAirConditioning">
+                                                        <i class="fas fa-wind me-1"></i>Кондиционер
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="roomImagesSection" class="mt-3" style="display: none;">
+                            <hr>
+                            <h5><i class="fas fa-images me-2"></i>Изображения номера</h5>
+                            <div id="roomImagesList" class="row mb-3"></div>
+                            <div class="mb-3">
+                                <label class="form-label">Загрузить дополнительное изображение</label>
+                                <div class="input-group">
+                                    <input type="file" id="roomImageUpload" class="form-control" accept="image/*">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="uploadRoomImage()">
+                                        <i class="fas fa-upload me-1"></i>Загрузить
+                                    </button>
+                                </div>
+                                <div class="form-text">Поддерживаются форматы JPG, PNG, GIF. Максимальный размер: 5MB</div>
+                            </div>
+                        </div>
+                        <div id="roomFormResult"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Отмена
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveRoom()">
+                        <i class="fas fa-save me-1"></i>Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение действия</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage">Вы уверены, что хотите выполнить это действие?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmAction">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light mt-5 py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0" id="footer-info"></p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="mb-0">Система управления гостиницей &copy; 2024</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEditingId = null;
+        let currentEditingRoomId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Устанавливаем сегодняшнюю дату по умолчанию
+            document.getElementById('stats-date').value = new Date().toISOString().split('T')[0];
+            
+            // Загружаем начальные данные
+            loadStatistics();
+            
+            // Настраиваем отслеживание длины описания
+            document.getElementById('roomDescription').addEventListener('input', function() {
+                document.getElementById('charCount').textContent = this.value.length;
+            });
+            
+            // Загружаем информацию о гостинице для футера
+            fetch('/api/hotel-info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('footer-info').textContent = 
+                        `${data.name} | ${data.address} | ${data.phone}`;
+                });
+            
+            // Обработчики для вкладок
+            document.getElementById('users-tab').addEventListener('click', loadUsers);
+            document.getElementById('rooms-tab').addEventListener('click', loadRooms);
+        });
+
+        // ========== СТАТИСТИКА ==========
+        function loadStatistics() {
+            const date = document.getElementById('stats-date').value;
+            htmx.ajax('GET', `/api/root/stats?date=${date}`, {
+                target: '#statistics-content',
+                swap: 'innerHTML'
+            });
+        }
+
+        // ========== ПОЛЬЗОВАТЕЛИ ==========
+        function loadUsers() {
+            htmx.ajax('GET', '/api/root/users', {
+                target: '#users-content',
+                swap: 'innerHTML'
+            });
+        }
+
+        function showUserModal(userId = null) {
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            const isEdit = userId !== null;
+            
+            document.getElementById('userModalTitle').innerHTML = 
+                `<i class="fas fa-${isEdit ? 'user-edit' : 'user-plus'} me-2"></i>${isEdit ? 'Редактировать пользователя' : 'Добавить пользователя'}`;
+            
+            // Настройка полей пароля
+            document.getElementById('passwordLabel').textContent = isEdit ? 'Новый пароль' : 'Пароль *';
+            document.getElementById('passwordHelp').style.display = isEdit ? 'block' : 'none';
+            document.getElementById('userPassword').required = !isEdit;
+            document.getElementById('userPasswordConfirm').required = !isEdit;
+            
+            if (isEdit) {
+                currentEditingId = userId;
+                // Загрузка данных пользователя
+                fetch('/api/root/users')
+                    .then(response => response.json())
+                    .then(users => {
+                        const user = users.find(u => u.id == userId);
+                        if (user) {
+                            document.getElementById('userId').value = user.id;
+                            document.getElementById('userSurname').value = user.surname;
+                            document.getElementById('userName').value = user.name;
+                            document.getElementById('userPatronymic').value = user.patronymic || '';
+                            document.getElementById('userLogin').value = user.login;
+                            document.getElementById('userPosition').value = user.position;
+                        }
+                    });
+            } else {
+                currentEditingId = null;
+                document.getElementById('userForm').reset();
+            }
+            
+            modal.show();
+        }
+
+        function saveUser() {
+            const formData = {
+                surname: document.getElementById('userSurname').value,
+                name: document.getElementById('userName').value,
+                patronymic: document.getElementById('userPatronymic').value,
+                login: document.getElementById('userLogin').value,
+                position: document.getElementById('userPosition').value
+            };
+
+            const password = document.getElementById('userPassword').value;
+            const passwordConfirm = document.getElementById('userPasswordConfirm').value;
+
+            // Проверка паролей
+            if (!currentEditingId && (!password || password !== passwordConfirm)) {
+                document.getElementById('userFormResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Пароли не совпадают или не заполнены
+                    </div>
+                `;
+                return;
+            }
+
+            if (password) {
+                formData.password = password;
+            }
+
+            const url = currentEditingId ? `/api/root/users/${currentEditingId}` : '/api/root/users';
+            const method = currentEditingId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+                    loadUsers();
+                    showAlert('success', data.message);
+                } else {
+                    document.getElementById('userFormResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            ${data.error}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('userFormResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Ошибка: ${error.message}
+                    </div>
+                `;
+            });
+        }
+
+        function deleteUser(userId, userName) {
+            showConfirmModal(
+                `Вы уверены, что хотите удалить пользователя "${userName}"?`,
+                () => {
+                    fetch(`/api/root/users/${userId}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                loadUsers();
+                                showAlert('success', data.message);
+                            } else {
+                                showAlert('error', data.error);
+                            }
+                        });
+                }
+            );
+        }
+
+        // ========== НОМЕРА ==========
+        function loadRooms() {
+            htmx.ajax('GET', '/api/root/rooms', {
+                target: '#rooms-content',
+                swap: 'innerHTML',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
+            });
+        }
+
+        function showRoomModal(roomId = null) {
+            const modal = new bootstrap.Modal(document.getElementById('roomModal'));
+            const isEdit = roomId !== null;
+            
+            document.getElementById('roomModalTitle').innerHTML = 
+                `<i class="fas fa-${isEdit ? 'edit' : 'plus'} me-2"></i>${isEdit ? 'Редактировать номер' : 'Добавить номер'}`;
+            
+            document.getElementById('roomImagesSection').style.display = isEdit ? 'block' : 'none';
+            document.getElementById('roomImageUrl').required = !isEdit;
+            
+            if (isEdit) {
+                currentEditingId = roomId;
+                currentEditingRoomId = roomId;
+                // Загрузка данных номера
+                loadRoomData(roomId);
+            } else {
+                currentEditingId = null;
+                currentEditingRoomId = null;
+                document.getElementById('roomForm').reset();
+                document.getElementById('charCount').textContent = '0';
+                document.getElementById('roomFormResult').innerHTML = '';
+            }
+            
+            modal.show();
+        }
+
+        // Новая функция для загрузки данных номера
+        function loadRoomData(roomId) {
+            fetch(`/api/root/rooms/${roomId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка загрузки данных');
+                    }
+                    return response.json();
+                })
+                .then(room => {
+                    document.getElementById('roomId').value = room.id;
+                    document.getElementById('roomBuilding').value = room.building;
+                    document.getElementById('roomNumber').value = room.room_number;
+                    document.getElementById('roomStatus').value = room.status;
+                    document.getElementById('roomPrice').value = parseFloat(room.price_per_night);
+                    document.getElementById('roomDoubleBeds').value = room.double_beds;
+                    document.getElementById('roomSingleBeds').value = room.single_beds;
+                    document.getElementById('roomRoomsCount').value = room.rooms_count;
+                    document.getElementById('roomDescription').value = room.description || '';
+                    document.getElementById('charCount').textContent = (room.description || '').length;
+                    document.getElementById('roomKettle').checked = Boolean(room.kettle);
+                    document.getElementById('roomTv').checked = Boolean(room.tv);
+                    document.getElementById('roomBalcony').checked = Boolean(room.balcony);
+                    document.getElementById('roomAirConditioning').checked = Boolean(room.air_conditioning);
+                    
+                    loadRoomImages(roomId);
+                })
+                .catch(error => {
+                    console.error('Error loading room data:', error);
+                    document.getElementById('roomFormResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Ошибка загрузки данных номера: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        function loadRoomImages(roomId) {
+            fetch(`/api/rooms/${roomId}/images`)
+                .then(response => response.json())
+                .then(images => {
+                    const container = document.getElementById('roomImagesList');
+                    container.innerHTML = '';
+                    
+                    if (images.length === 0) {
+                        container.innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-info text-center">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Для этого номера еще нет изображений
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    images.forEach(image => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4 mb-3';
+                        col.innerHTML = `
+                            <div class="card h-100 ${image.is_main ? 'border-primary' : ''}">
+                                <img src="${image.image_url}" class="card-img-top" style="height: 200px; object-fit: cover;" 
+                                     onerror="this.src='/images/room-placeholder.jpg'">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            ${image.is_main ? '<i class="fas fa-star text-warning me-1"></i>Главное' : 'Дополнительное'}
+                                        </small>
+                                        <div class="btn-group btn-group-sm">
+                                            ${!image.is_main ? `
+                                                <button class="btn btn-outline-primary" onclick="setMainImage(${roomId}, ${image.id})" title="Сделать главной">
+                                                    <i class="fas fa-star"></i>
+                                                </button>
+                                            ` : `
+                                                <button class="btn btn-primary" disabled title="Главное изображение">
+                                                    <i class="fas fa-star"></i>
+                                                </button>
+                                            `}
+                                            <button class="btn btn-outline-danger" onclick="deleteRoomImage(${roomId}, ${image.id})" title="Удалить">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(col);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading room images:', error);
+                    const container = document.getElementById('roomImagesList');
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger text-center">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Ошибка загрузки изображений
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function saveRoom() {
+            const priceInput = document.getElementById('roomPrice').value;
+            if (!priceInput || isNaN(parseFloat(priceInput))) {
+                document.getElementById('roomFormResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Пожалуйста, введите корректную цену за сутки
+                    </div>
+                `;
+                return;
+            }
+
+            const formData = {
+                building: document.getElementById('roomBuilding').value,
+                room_number: document.getElementById('roomNumber').value,
+                status: document.getElementById('roomStatus').value,
+                price_per_night: parseFloat(priceInput),
+                double_beds: parseInt(document.getElementById('roomDoubleBeds').value) || 0,
+                single_beds: parseInt(document.getElementById('roomSingleBeds').value) || 0,
+                rooms_count: parseInt(document.getElementById('roomRoomsCount').value) || 1,
+                description: document.getElementById('roomDescription').value,
+                kettle: document.getElementById('roomKettle').checked,
+                tv: document.getElementById('roomTv').checked,
+                balcony: document.getElementById('roomBalcony').checked,
+                air_conditioning: document.getElementById('roomAirConditioning').checked
+            };
+
+            // Добавляем URL изображения только при создании номера
+            if (!currentEditingId) {
+                const imageUrl = document.getElementById('roomImageUrl').value;
+                if (imageUrl) {
+                    formData.image_url = imageUrl;
+                }
+            }
+
+            const url = currentEditingId ? `/api/root/rooms/${currentEditingId}` : '/api/root/rooms';
+            const method = currentEditingId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('roomModal')).hide();
+                    loadRooms();
+                    showAlert('success', data.message);
+                } else {
+                    document.getElementById('roomFormResult').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            ${data.error}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('roomFormResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Ошибка: ${error.message}
+                    </div>
+                `;
+            });
+        }
+
+        function deleteRoom(roomId, roomInfo) {
+            showConfirmModal(
+                `Вы уверены, что хотите удалить номер "${roomInfo}"?`,
+                () => {
+                    fetch(`/api/root/rooms/${roomId}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                loadRooms();
+                                showAlert('success', data.message);
+                            } else {
+                                showAlert('error', data.error);
+                            }
+                        });
+                }
+            );
+        }
+
+        function setMainImage(roomId, imageId) {
+            fetch(`/api/root/rooms/${roomId}/images/${imageId}/set-main`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadRoomImages(roomId);
+                        showAlert('success', data.message);
+                    } else {
+                        showAlert('error', data.error);
+                    }
+                });
+        }
+
+        function deleteRoomImage(roomId, imageId) {
+            showConfirmModal(
+                'Удалить это изображение?',
+                () => {
+                    fetch(`/api/root/rooms/${roomId}/images/${imageId}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                loadRoomImages(roomId);
+                                showAlert('success', data.message);
+                            } else {
+                                showAlert('error', data.error);
+                            }
+                        });
+                }
+            );
+        }
+
+        function uploadRoomImage() {
+            const fileInput = document.getElementById('roomImageUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showAlert('warning', 'Пожалуйста, выберите файл для загрузки');
+                return;
+            }
+            
+            if (!file.type.match('image.*')) {
+                showAlert('error', 'Пожалуйста, выберите файл изображения');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('error', 'Размер файла не должен превышать 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                
+                fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        image: base64,
+                        filename: `room_${currentEditingRoomId}_${Date.now()}.${file.name.split('.').pop()}`
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Добавляем изображение к номеру
+                        return fetch(`/api/root/rooms/${currentEditingRoomId}/images`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                imageUrl: data.url, 
+                                isMain: false 
+                            })
+                        });
+                    } else {
+                        throw new Error(data.error);
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadRoomImages(currentEditingRoomId);
+                        fileInput.value = '';
+                        showAlert('success', 'Изображение успешно загружено');
+                    } else {
+                        throw new Error(data.error);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Ошибка загрузки: ' + error.message);
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ========== СИСТЕМА ==========
+        function initDatabase() {
+            showConfirmModal(
+                'ВНИМАНИЕ! Это действие пересоздаст базу данных и удалит все существующие данные. Вы уверены, что хотите продолжить?',
+                () => {
+                    htmx.ajax('POST', '/api/init-db', {
+                        target: '#system-result',
+                        swap: 'innerHTML'
+                    });
+                }
+            );
+        }
+
+        function showSystemInfo() {
+            const info = `
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Информация о системе
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong><i class="fas fa-database me-2"></i>Тип базы данных:</strong> SQLite</p>
+                                <p><strong><i class="fas fa-server me-2"></i>Версия Node.js:</strong> ${process.version}</p>
+                                <p><strong><i class="fas fa-desktop me-2"></i>Платформа:</strong> ${process.platform}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong><i class="fas fa-clock me-2"></i>Время запуска:</strong> ${new Date().toLocaleString()}</p>
+                                <p><strong><i class="fas fa-memory me-2"></i>Использование памяти:</strong> ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB</p>
+                                <p><strong><i class="fas fa-hdd me-2"></i>Время работы:</strong> ${formatUptime(process.uptime())}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('system-result').innerHTML = info;
+        }
+
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / (24 * 60 * 60));
+            const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+            const minutes = Math.floor((seconds % (60 * 60)) / 60);
+            
+            if (days > 0) {
+                return `${days} д. ${hours} ч. ${minutes} мин.`;
+            } else if (hours > 0) {
+                return `${hours} ч. ${minutes} мин.`;
+            } else {
+                return `${minutes} мин.`;
+            }
+        }
+
+        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+        function showConfirmModal(message, callback) {
+            document.getElementById('confirmMessage').textContent = message;
+            const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            
+            // Удаляем предыдущие обработчики
+            const confirmButton = document.getElementById('confirmAction');
+            const newConfirmButton = confirmButton.cloneNode(true);
+            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+            
+            // Добавляем новый обработчик
+            document.getElementById('confirmAction').addEventListener('click', function() {
+                modal.hide();
+                callback();
+            });
+            
+            modal.show();
+        }
+
+        function showAlert(type, message) {
+            const alertClass = {
+                'success': 'alert-success',
+                'error': 'alert-danger',
+                'warning': 'alert-warning',
+                'info': 'alert-info'
+            }[type] || 'alert-info';
+            
+            const iconClass = {
+                'success': 'fa-check-circle',
+                'error': 'fa-exclamation-triangle',
+                'warning': 'fa-exclamation-circle',
+                'info': 'fa-info-circle'
+            }[type] || 'fa-info-circle';
+            
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alert.innerHTML = `
+                <i class="fas ${iconClass} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Обработка ошибок авторизации
+        document.addEventListener('htmx:beforeRequest', function(evt) {
+            // Добавляем обработчик для всех запросов
+        });
+
+        document.addEventListener('htmx:beforeOnLoad', function(evt) {
+            if (evt.detail.xhr.status === 401) {
+                window.location.href = '/login';
+                evt.preventDefault();
+            }
+        });
+
+        // Глобальный обработчик ошибок fetch
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && event.reason.status === 401) {
+                window.location.href = '/login';
+            }
+        });
+
+        // Глобальные переменные для доступа из HTMX
+        window.deleteUser = deleteUser;
+        window.deleteRoom = deleteRoom;
+        window.showUserModal = showUserModal;
+        window.showRoomModal = showRoomModal;
+        window.loadRoomData = loadRoomData;
+    </script>
+</body>
+</html>

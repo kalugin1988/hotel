@@ -1,0 +1,1378 @@
+/* ===== VARIABLES ===== */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --info-color: #17a2b8;
+    --light-bg: #f8f9fa;
+    --dark-bg: #343a40;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-warning: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    --gradient-danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    --shadow-light: 0 2px 15px rgba(0,0,0,0.08);
+    --shadow-medium: 0 5px 25px rgba(0,0,0,0.15);
+    --shadow-heavy: 0 10px 40px rgba(0,0,0,0.2);
+    --border-radius: 12px;
+    --border-radius-lg: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--light-bg);
+    color: #333;
+    overflow-x: hidden;
+}
+
+.admin-body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.section-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 0 15px;
+}
+
+/* ===== NAVIGATION ===== */
+.navbar {
+    box-shadow: var(--shadow-light);
+    padding: 1rem 0;
+    background: var(--gradient-primary) !important;
+}
+
+.navbar-brand h4 {
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.navbar-brand small {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: var(--transition);
+    border-radius: 8px;
+    margin: 0 0.25rem;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+    background: var(--gradient-primary);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop') center/cover;
+    opacity: 0.1;
+}
+
+.min-vh-80 {
+    min-height: 80vh;
+}
+
+/* ===== CARDS ===== */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-heavy);
+}
+
+.search-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-heavy);
+    transition: var(--transition);
+}
+
+.search-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* ===== ROOM CARDS ===== */
+.rooms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.room-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    background: white;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.room-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.room-card.vip {
+    border-left: 4px solid #ffc107;
+}
+
+.room-card.standard {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.room-card.economy {
+    border-left: 4px solid var(--success-color);
+}
+
+/* Улучшенное отображение изображений */
+.room-image {
+    height: 250px;
+    object-fit: cover;
+    transition: var(--transition);
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: block;
+}
+
+.room-card:hover .room-image {
+    transform: scale(1.05);
+}
+
+.room-management-image {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    aspect-ratio: 4/3;
+}
+
+.booking-image {
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    width: 100%;
+    aspect-ratio: 4/3;
+}
+
+/* Гарантия прямоугольной формы для всех изображений */
+img {
+    aspect-ratio: 4/3;
+    object-fit: cover;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-light);
+}
+
+.status-vip {
+    background: var(--gradient-warning);
+    color: #856404;
+}
+
+.status-standard {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.status-economy {
+    background: linear-gradient(135deg, #27ae60, #58d68d);
+    color: white;
+}
+
+/* ===== AMENITIES & FEATURES ===== */
+.amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.amenity-item {
+    background: var(--light-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.amenity-item:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.feature-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.feature-item:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ===== PRICING ===== */
+.price-section {
+    text-align: center;
+}
+
+.price-tag {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    display: block;
+}
+
+.price-period {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-success {
+    background: var(--gradient-success);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-warning {
+    background: var(--gradient-warning);
+    box-shadow: var(--shadow-light);
+}
+
+.btn-danger {
+    background: var(--gradient-danger);
+    box-shadow: var(--shadow-light);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-book {
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+}
+
+/* ===== ADMIN STYLES ===== */
+.sidebar {
+    background: white;
+    border-right: 1px solid #e9ecef;
+    min-height: calc(100vh - 76px);
+    box-shadow: var(--shadow-light);
+    position: sticky;
+    top: 76px;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    color: var(--primary-color);
+    border-radius: 0;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+    color: var(--secondary-color);
+}
+
+.sidebar .list-group-item.active {
+    background: var(--gradient-primary);
+    color: white;
+    transform: translateX(5px);
+}
+
+.client-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+}
+
+/* ===== BOOKING CARDS ===== */
+.booking-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    background: white;
+    overflow: hidden;
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.btn-approve, .btn-reject {
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-approve:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-reject:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* ===== MANAGEMENT TABLE ===== */
+.table-container {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+}
+
+.rooms-management-table {
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-header {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.table-header th {
+    border: none;
+    padding: 1.25rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rooms-management-table td {
+    padding: 1.25rem 1rem;
+    vertical-align: middle;
+    border-color: #e9ecef;
+    font-weight: 500;
+}
+
+.room-thumbnail {
+    position: relative;
+}
+
+.status-indicator {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.status-indicator.status-vip {
+    background: var(--gradient-warning);
+    color: #856404;
+}
+
+.status-indicator.status-standard {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.status-indicator.status-economy {
+    background: linear-gradient(135deg, #27ae60, #58d68d);
+    color: white;
+}
+
+.price-cell .price-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.features-compact {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.feature-active {
+    color: var(--success-color);
+}
+
+.feature-inactive {
+    color: #dee2e6;
+}
+
+.action-buttons-compact {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ===== FORMS ===== */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    transform: translateY(-2px);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+/* ===== MODALS ===== */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-heavy);
+}
+
+.modal-header {
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+    border-top: 1px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== LOADING STATES ===== */
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
+
+/* ===== PLACEHOLDER STYLES ===== */
+.no-rooms-placeholder,
+.error-placeholder,
+.no-bookings-placeholder,
+.no-rooms-management {
+    padding: 3rem 2rem;
+}
+
+.no-rooms-placeholder i,
+.error-placeholder i,
+.no-bookings-placeholder i,
+.no-rooms-management i {
+    margin-bottom: 1.5rem;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.shadow-custom {
+    box-shadow: var(--shadow-medium);
+}
+
+.text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: var(--gradient-primary);
+}
+
+.bg-gradient-success {
+    background: var(--gradient-success);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .rooms-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .hero-section {
+        min-height: 70vh;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 60vh;
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .search-card {
+        margin-top: 2rem;
+    }
+    
+    .sidebar {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        position: static;
+    }
+    
+    .rooms-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .room-card {
+        margin-bottom: 1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .amenities-list {
+        justify-content: center;
+    }
+    
+    .booking-card .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .action-buttons .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .rooms-management-table th,
+    .rooms-management-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    /* Улучшенное отображение таблицы на мобильных */
+    .rooms-management-table {
+        font-size: 0.8rem;
+    }
+    
+    .room-management-image {
+        width: 60px;
+        height: 45px;
+    }
+    
+    .features-compact {
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .action-buttons-compact {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .action-buttons-compact .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .room-image {
+        height: 200px;
+    }
+    
+    .price-tag {
+        font-size: 1.5rem;
+    }
+    
+    .navbar-brand h4 {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-brand small {
+        font-size: 0.7rem;
+    }
+    
+    /* Адаптация модальных окон для мобильных */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: var(--border-radius);
+    }
+    
+    /* Улучшенное отображение карточек бронирований */
+    .booking-card .row {
+        flex-direction: column;
+    }
+    
+    .booking-card .col-md-2,
+    .booking-card .col-md-6,
+    .booking-card .col-md-4 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .booking-image {
+        height: 150px;
+    }
+    
+    /* Компактное отображение таблицы на очень маленьких экранах */
+    @media (max-width: 400px) {
+        .rooms-management-table {
+            font-size: 0.7rem;
+        }
+        
+        .room-management-image {
+            width: 50px;
+            height: 38px;
+        }
+        
+        .status-indicator {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+        }
+    }
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .navbar,
+    .sidebar,
+    .btn,
+    .action-buttons {
+        display: none !important;
+    }
+    
+    .container {
+        max-width: none;
+    }
+    
+    .room-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* ===== TOUCH FRIENDLY STYLES ===== */
+@media (hover: none) and (pointer: coarse) {
+    .room-card:hover {
+        transform: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    .nav-link:hover {
+        transform: none;
+    }
+    
+    /* Увеличиваем области клика для мобильных */
+    .btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .form-control,
+    .form-select {
+        min-height: 44px;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+    }
+}
+
+/* ===== SAFE AREA SUPPORT для современных мобильных устройств ===== */
+@supports(padding: max(0px)) {
+    .container,
+    .navbar,
+    .modal-content {
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+    }
+    
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* ===== ПЕСОЧНЫЕ И ЛИСТВЕННЫЕ РАМКИ ДЛЯ НОМЕРОВ ===== */
+.room-card-wrapper {
+    position: relative;
+    padding: 15px;
+    margin: 10px;
+}
+
+.room-card-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        /* Угловые элементы из листьев */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23d4af37" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.3"/></svg>') top left/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23d4af37" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.3"/></svg>') top right/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23d4af37" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.3"/></svg>') bottom left/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23d4af37" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.3"/></svg>') bottom right/50px 50px no-repeat,
+        /* Песочный градиент */
+        linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(245,222,179,0.2) 50%, rgba(210,180,140,0.1) 100%);
+    border-radius: 25px;
+    z-index: -1;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.room-card-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    background: 
+        /* Текстура песка */
+        radial-gradient(circle at 20% 80%, rgba(245,222,179,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(210,180,140,0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(222,184,135,0.2) 0%, transparent 50%);
+    border-radius: 20px;
+    z-index: -1;
+    border: 1px solid rgba(212,175,55,0.3);
+}
+
+/* Улучшенные карточки номеров с тропическим дизайном */
+.room-card-enhanced {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 
+        0 10px 30px rgba(139, 69, 19, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #fffaf0 0%, #fdf5e6 100%);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.room-card-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        #d4af37 0%, 
+        #f5deb3 25%, 
+        #daa520 50%, 
+        #f5deb3 75%, 
+        #d4af37 100%);
+    z-index: 2;
+}
+
+.room-card-enhanced:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 
+        0 20px 50px rgba(139, 69, 19, 0.3),
+        0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Улучшенное изображение номера */
+.room-image-enhanced {
+    height: 250px;
+    object-fit: cover;
+    width: 100%;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.room-card-enhanced:hover .room-image-enhanced {
+    transform: scale(1.05);
+}
+
+/* Декоративные листья вокруг изображения */
+.image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-container::before,
+.image-container::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: 
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23d4af37" d="M30,20 Q45,5 65,15 Q85,25 80,45 Q75,65 55,70 Q35,75 20,60 Q5,45 15,25 Q25,5 30,20 Z" opacity="0.6"/></svg>') center/contain no-repeat;
+    z-index: 3;
+    transition: all 0.4s ease;
+}
+
+.image-container::before {
+    top: -10px;
+    left: -10px;
+    transform: rotate(-15deg);
+}
+
+.image-container::after {
+    bottom: -10px;
+    right: -10px;
+    transform: rotate(165deg);
+}
+
+.room-card-enhanced:hover .image-container::before {
+    transform: rotate(-25deg) scale(1.1);
+    top: -5px;
+    left: -5px;
+}
+
+.room-card-enhanced:hover .image-container::after {
+    transform: rotate(175deg) scale(1.1);
+    bottom: -5px;
+    right: -5px;
+}
+
+/* Стили для статусов номеров с песочной тематикой */
+.status-badge-enhanced {
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 2px solid rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 10;
+}
+
+.status-vip-enhanced {
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #daa520 100%);
+    color: #8b4513;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.status-standard-enhanced {
+    background: linear-gradient(135deg, #c19a6b 0%, #d2b48c 50%, #bc8f8f 100%);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.status-economy-enhanced {
+    background: linear-gradient(135deg, #cd853f 0%, #deb887 50%, #f4a460 100%);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Улучшенный контент карточки */
+.room-content-enhanced {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, transparent, rgba(245,222,179,0.1));
+}
+
+.room-title-enhanced {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #8b4513;
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.room-title-enhanced::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #d4af37, transparent);
+}
+
+.room-description-enhanced {
+    color: #654321;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+/* Улучшенные аменities */
+.amenities-list-enhanced {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.amenity-item-enhanced {
+    background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(245,222,179,0.2) 100%);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #8b4513;
+}
+
+.amenity-item-enhanced:hover {
+    background: linear-gradient(135deg, #d4af37 0%, #f5deb3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+}
+
+/* Улучшенные features */
+.features-grid-enhanced {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.feature-item-enhanced {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(245,222,179,0.2) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #8b4513;
+}
+
+.feature-item-enhanced:hover {
+    background: linear-gradient(135deg, #d4af37 0%, #f5deb3 100%);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+}
+
+/* Улучшенная цена */
+.price-section-enhanced {
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(245,222,179,0.1) 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(212,175,55,0.2);
+    margin-top: auto;
+}
+
+.price-tag-enhanced {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #8b4513;
+    display: block;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.price-period-enhanced {
+    font-size: 0.8rem;
+    color: #a0522d;
+    font-weight: 600;
+}
+
+/* Улучшенная кнопка бронирования */
+.btn-book-enhanced {
+    background: linear-gradient(135deg, #d4af37 0%, #daa520 50%, #b8860b 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(184,134,11,0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-book-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-book-enhanced:hover::before {
+    left: 100%;
+}
+
+.btn-book-enhanced:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(184,134,11,0.4);
+    background: linear-gradient(135deg, #daa520 0%, #d4af37 50%, #cd853f 100%);
+}
+
+/* Декоративные элементы для корпуса */
+.building-badge-enhanced {
+    background: linear-gradient(135deg, rgba(139,69,19,0.9) 0%, rgba(160,82,45,0.9) 100%);
+    color: #f5deb3;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    border: 1px solid rgba(212,175,55,0.5);
+}
+
+/* Анимация появления */
+@keyframes fadeInUpEnhanced {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fade-in-up-enhanced {
+    animation: fadeInUpEnhanced 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .room-card-wrapper {
+        padding: 10px;
+        margin: 5px;
+    }
+    
+    .room-card-wrapper::before {
+        border-radius: 20px;
+    }
+    
+    .room-card-wrapper::after {
+        border-radius: 15px;
+    }
+    
+    .room-card-enhanced:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+    
+    .image-container::before,
+    .image-container::after {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .features-grid-enhanced {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Специальные эффекты для VIP номеров */
+.room-card-wrapper.vip-special::before {
+    background: 
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23ffd700" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.4"/></svg>') top left/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23ffd700" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.4"/></svg>') top right/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23ffd700" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.4"/></svg>') bottom left/50px 50px no-repeat,
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23ffd700" d="M30,10 Q50,5 70,10 Q90,20 85,40 Q80,60 60,65 Q40,70 25,60 Q10,50 15,30 Q20,10 30,10 Z" opacity="0.4"/></svg>') bottom right/50px 50px no-repeat,
+        linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,255,240,0.25) 50%, rgba(255,215,0,0.15) 100%);
+}
+/* Дополнительные стили для песочной темы */
+.border-sand {
+    border-color: rgba(212,175,55,0.3) !important;
+}
+
+/* Эффект блеска для VIP номеров */
+@keyframes goldShine {
+    0% { background-position: -100px 0; }
+    100% { background-position: 100px 0; }
+}
+
+.room-card-wrapper.vip-special .room-card-enhanced::before {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,215,0,0.6) 50%, 
+        transparent 100%);
+    background-size: 200px 100%;
+    animation: goldShine 3s infinite;
+}
+
+/* Тень для текста в песочной теме */
+.text-sand-shadow {
+    text-shadow: 0 2px 4px rgba(139,69,19,0.3);
+}
+
+/* Градиентные обводки */
+.gold-border {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #d4af37, #f5deb3, #daa520) 1;
+}
+
+.sand-border {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #c19a6b, #d2b48c, #bc8f8f) 1;
+}

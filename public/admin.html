@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора - Управление бронированиями</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container">
+            <span class="navbar-brand d-flex align-items-center">
+                <i class="fas fa-user-shield fa-2x me-2"></i>
+                <div>
+                    <h4 class="mb-0">Панель администратора</h4>
+                    <small class="opacity-75">Управление бронированиями</small>
+                </div>
+            </span>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-light d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="avatar-placeholder bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span id="admin-name">Администратор</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                                <i class="fas fa-key me-2"></i>Сменить пароль
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/root">
+                                <i class="fas fa-cogs me-2"></i>Управление системой
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/">
+                                <i class="fas fa-home me-2"></i>На главную
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" hx-post="/api/logout" hx-target="body">
+                                <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Боковая панель -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active" 
+                           hx-get="/api/admin/bookings" hx-target="#requests-content" hx-trigger="click">
+                            <i class="fas fa-list me-2"></i>Заявки на бронирование
+                            <span id="pending-count" class="badge bg-danger rounded-pill ms-2">0</span>
+                        </a>
+                        <a href="/root" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cogs me-2"></i>Управление системой
+                        </a>
+                        <a href="/" class="list-group-item list-group-item-action">
+                            <i class="fas fa-eye me-2"></i>Просмотр сайта
+                        </a>
+                    </div>
+                    
+                    <!-- Статистика -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="border-bottom pb-2">Быстрая статистика</h6>
+                        <div class="row text-center">
+                            <div class="col-6 mb-2">
+                                <small class="text-muted d-block">Заявок сегодня</small>
+                                <strong id="today-count">0</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <small class="text-muted d-block">Всего заявок</small>
+                                <strong id="total-count">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Основной контент -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-list me-2"></i>Заявки на бронирование
+                    </h2>
+                    <button class="btn btn-outline-primary" onclick="loadBookings()">
+                        <i class="fas fa-sync-alt me-1"></i>Обновить
+                    </button>
+                </div>
+                
+                <div id="requests-content">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                        <p class="mt-2">Загрузка заявок...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно отклонения -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-times-circle me-2"></i>Отклонение заявки
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="rejectForm">
+                        <input type="hidden" id="rejectBookingId">
+                        <div class="mb-3">
+                            <label class="form-label">Причина отказа *</label>
+                            <textarea class="form-control" id="rejectReason" rows="4" 
+                                      placeholder="Укажите причину отказа клиенту..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Отмена
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="submitRejection()">
+                        <i class="fas fa-ban me-1"></i>Отклонить заявку
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно смены пароля -->
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>Смена пароля
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordForm" hx-post="/api/change-password" hx-target="#password-result">
+                        <div class="mb-3">
+                            <label class="form-label">Текущий пароль *</label>
+                            <input type="password" name="currentPassword" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Новый пароль *</label>
+                            <input type="password" name="newPassword" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Повторите новый пароль *</label>
+                            <input type="password" name="confirmPassword" class="form-control" required>
+                        </div>
+                        <div id="password-result"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Отмена
+                    </button>
+                    <button type="submit" form="passwordForm" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Сменить пароль
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем заявки при загрузке страницы
+            loadBookings();
+            
+            // Загружаем информацию о пользователе
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (user.name) {
+                document.getElementById('admin-name').textContent = `${user.surname} ${user.name}`;
+            }
+        });
+
+        function loadBookings() {
+            htmx.ajax('GET', '/api/admin/bookings', {
+                target: '#requests-content',
+                swap: 'innerHTML',
+                indicator: '#requests-content'
+            });
+        }
+
+        function showRejectModal(bookingId) {
+            document.getElementById('rejectBookingId').value = bookingId;
+            document.getElementById('rejectReason').value = '';
+            const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+            modal.show();
+        }
+
+        function submitRejection() {
+            const bookingId = document.getElementById('rejectBookingId').value;
+            const reason = document.getElementById('rejectReason').value;
+            
+            if (!reason.trim()) {
+                alert('Пожалуйста, укажите причину отказа');
+                return;
+            }
+            
+            htmx.ajax('POST', `/api/admin/bookings/${bookingId}/reject`, {
+                values: { reason: reason },
+                target: '#requests-content',
+                swap: 'innerHTML'
+            }).then(() => {
+                bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+                showNotification('success', 'Заявка успешно отклонена');
+            });
+        }
+
+        // Обновляем статистику
+        function updateStats(bookings) {
+            document.getElementById('pending-count').textContent = bookings.length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = bookings.filter(b => b.created_at.startsWith(today)).length;
+            document.getElementById('today-count').textContent = todayCount;
+            document.getElementById('total-count').textContent = bookings.length;
+        }
+
+        // Обработка успешных действий
+        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+            if (evt.detail.target.id === 'password-result') {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (response.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
+                    document.getElementById('passwordForm').reset();
+                    showNotification('success', 'Пароль успешно изменен!');
+                }
+            }
+            
+            if (evt.detail.target.id === 'requests-content') {
+                const response = JSON.parse(evt.detail.xhr.responseText);
+                if (Array.isArray(response)) {
+                    updateStats(response);
+                }
+            }
+        });
+
+        // Показываем уведомления
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Автоматическое обновление каждые 30 секунд
+        setInterval(loadBookings, 30000);
+    </script>
+</body>
+</html>
