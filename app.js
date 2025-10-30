@@ -14,9 +14,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const hotelName = process.env.HOTEL_NAME || "Гостиница 'Райский Отдых'";
-const hotelAddress = process.env.HOTEL_ADDR || "г. Москва, ул. Центральная, 1";
-const hotelPhone = process.env.HOTEL_PHONE || "+7 (495) 123-45-67";
+const hotelName = process.env.HOTEL_NAME || "Гостиница 'Hotel 777'";
+const hotelAddress = process.env.HOTEL_ADDR || "Гудаутский район, село Мгудзырхуа, Набережная улица, 1";
+const hotelPhone = process.env.HOTEL_PHONE || "+7 (940) 925-00-77";
 
 // Создаем необходимые папки
 const dataDir = path.join(__dirname, 'data');
